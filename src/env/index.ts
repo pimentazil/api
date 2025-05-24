@@ -1,11 +1,9 @@
-// import { config } from '../database'
+// src/env.ts
+import { config as loadEnv } from './env'
 import { z } from 'zod'
 
-// if (process.env.NODE_ENV === 'test') {
-//   config({ path: '.env-test' })
-// } else {
-//   config()
-// }
+// Carrega as variáveis do arquivo .env
+loadEnv()
 
 const envSchema = z.object({
   NODE_ENV: z.enum(['development', 'test', 'production']).default('production'),
@@ -15,5 +13,10 @@ const envSchema = z.object({
 })
 
 const _env = envSchema.safeParse(process.env)
+
+if (!_env.success) {
+  console.error('❌ Erro nas variáveis de ambiente:', _env.error.format())
+  process.exit(1)
+}
 
 export const env = _env.data
